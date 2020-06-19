@@ -11,3 +11,8 @@ class PankoObject:
         """
 
         raise NotImplementedError
+
+    def call(self, arguments: Sequence[PankoObject]) -> PankoObject:
+        """Call this object, passing the given list of arguments as named parameters."""
+
+        raise NotImplementedError
