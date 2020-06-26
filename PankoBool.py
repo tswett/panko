@@ -16,6 +16,9 @@ class PankoBool(PankoObject):
         raise NotImplementedError
 
 class PankoTrue(PankoBool):
+    def __eq__(self, other):
+        return isinstance(other, PankoTrue)
+
     def __repr__(self):
         return "Panko boolean 'true'"
 
@@ -23,6 +26,9 @@ class PankoTrue(PankoBool):
         return true_value
 
 class PankoFalse(PankoBool):
+    def __eq__(self, other):
+        return isinstance(other, PankoFalse)
+
     def __repr__(self):
         return "Panko boolean 'false'"
 
