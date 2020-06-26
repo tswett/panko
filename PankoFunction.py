@@ -1,7 +1,6 @@
 from typing import List, Sequence
 
 from PankoObject import PankoObject
-from PankoTable import PankoTable
 
 class PankoInstruction:
     def execute(self, stack: List[PankoObject]):
@@ -25,7 +24,7 @@ class PankoFunction(PankoObject):
         return repr(self.instructions)
     
     def call(self, arguments: Sequence[PankoObject]) -> PankoObject:
-        stack = [PankoTable.from_sequence(arguments)]
+        stack = list(arguments)
 
         for instruction in self.instructions:
             instruction.execute(stack)
