@@ -6,11 +6,10 @@ import Parser
 
 class BasicTests(unittest.TestCase):
     def test_constant_function(self):
-        panko_true = PankoTrue()
-        instruction_list = [PushPrimitiveInstruction(panko_true)]
+        instruction_list = [PushPrimitiveInstruction(PankoTrue())]
         function = PankoFunction(instruction_list)
         result = function.call(arguments=[])
-        self.assertEqual(result, panko_true)
+        self.assertEqual(result, PankoTrue())
     
     def test_parse_constant_function(self):
         function = Parser.parse_function_body('return true;')
