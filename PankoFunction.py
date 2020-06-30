@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from typing import List, Sequence
 
 from PankoObject import PankoObject
 
 class PankoInstruction:
-    def execute(self, stack: List[PankoObject]):
+    def execute(self, stack: List[PankoObject], positionals: Sequence[PankoInstruction]):
         raise NotImplementedError
 
 class PushPrimitiveInstruction(PankoInstruction):
@@ -13,7 +15,7 @@ class PushPrimitiveInstruction(PankoInstruction):
     def __repr__(self):
         return f'push({self.value})'
 
-    def execute(self, stack: List[PankoObject]):
+    def execute(self, stack: List[PankoObject], positionals: Sequence[PankoInstruction]):
         stack.append(self.value)
 
 class PankoFunction(PankoObject):
@@ -24,9 +26,10 @@ class PankoFunction(PankoObject):
         return repr(self.instructions)
     
     def call(self, arguments: Sequence[PankoObject]) -> PankoObject:
-        stack = list(arguments)
+        stack = []
+        positionals = list(arguments)
 
         for instruction in self.instructions:
-            instruction.execute(stack)
+            instruction.execute(stack, positionals)
 
         return stack[-1]
