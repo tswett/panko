@@ -1,3 +1,4 @@
+import logging
 from typing import Sequence
 
 from PankoObject import PankoObject
@@ -5,6 +6,10 @@ from PankoObject import PankoObject
 class PankoBool(PankoObject):
     def send_message_positional(
         self, msg_name: bytes, arguments: Sequence[PankoObject]) -> PankoObject:
+
+        logging.debug(f'PankoBool received message: {msg_name}')
+        logging.debug(f'PankoBool self is: {self}')
+        logging.debug(f'PankoBool message arguments: {arguments}')
 
         if msg_name == b'if_else_v':
             true_value, false_value = arguments

@@ -15,8 +15,24 @@ class PushPrimitiveInstruction(PankoInstruction):
     def __repr__(self):
         return f'push({self.value})'
 
-    def execute(self, stack: List[PankoObject], positionals: Sequence[PankoInstruction]):
+    def execute(self, stack: List[PankoObject], positionals: Sequence[PankoObject]):
         stack.append(self.value)
+
+class SendMessageInstruction(PankoInstruction):
+    def __init__(self, message_name: bytes, num_arguments: int):
+        self.message_name = message_name
+        self.num_arguments = num_arguments
+    
+    def __repr__(self):
+        return f'send_message({self.message_name}, {self.num_arguments})'
+
+    def execute(self, stack: List[PankoObject], positionals: Sequence[PankoObject]):
+        arguments = stack[-self.num_arguments:]
+        for _ in range(self.num_arguments):
+            stack.pop()
+        target = stack.pop()
+        result = target.send_message_positional(self.message_name, arguments)
+        stack.append(result)
 
 class PankoFunction(PankoObject):
     def __init__(self, instructions: Sequence[PankoInstruction]):
