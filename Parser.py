@@ -4,10 +4,14 @@ from PankoBool import PankoTrue
 from PankoFunction import PankoFunction, PushPrimitiveInstruction
 from PankoObject import PankoObject
 
-grammar = """
-    ?start: "return" atom ";" -> primitive_to_function
+grammar = r"""
+    start: _RETURN atom _SEMICOLON -> primitive_to_function
 
-    ?atom: "true" -> true
+    atom: _TRUE -> true
+
+    _SEMICOLON.5: ";"
+    _RETURN.7: /return(?!\w)/
+    _TRUE.7: /true(?!\w)/
 
     %import common.WS_INLINE
     %ignore WS_INLINE
