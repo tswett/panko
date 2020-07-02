@@ -5,8 +5,14 @@ from typing import List, Sequence
 from .objects import PankoObject
 
 
+class ExecutionContext:
+    def __init__(self, stack: List[PankoObject], positionals: Sequence[PankoObject]):
+        self.stack = stack
+        self.positionals = positionals
+
+
 class PankoInstruction:
-    def execute(self, stack: List[PankoObject], positionals: Sequence[PankoObject]):
+    def execute(self, context: ExecutionContext):
         raise NotImplementedError
 
 
@@ -17,8 +23,8 @@ class PushPrimitiveInstruction(PankoInstruction):
     def __repr__(self):
         return f"push({self.value})"
 
-    def execute(self, stack: List[PankoObject], positionals: Sequence[PankoObject]):
-        stack.append(self.value)
+    def execute(self, context: ExecutionContext):
+        context.stack.append(self.value)
 
 
 class SendMessageInstruction(PankoInstruction):
@@ -29,13 +35,13 @@ class SendMessageInstruction(PankoInstruction):
     def __repr__(self):
         return f"send_message({self.message_name}, {self.num_arguments})"
 
-    def execute(self, stack: List[PankoObject], positionals: Sequence[PankoObject]):
-        arguments = stack[-self.num_arguments :]
+    def execute(self, context: ExecutionContext):
+        arguments = context.stack[-self.num_arguments :]
         for _ in range(self.num_arguments):
-            stack.pop()
-        target = stack.pop()
+            context.stack.pop()
+        target = context.stack.pop()
         result = target.send_message_positional(self.message_name, arguments)
-        stack.append(result)
+        context.stack.append(result)
 
 
 class PankoFunction(PankoObject):
@@ -46,10 +52,9 @@ class PankoFunction(PankoObject):
         return repr(self.instructions)
 
     def call(self, arguments: Sequence[PankoObject]) -> PankoObject:
-        stack = []  # type: List[PankoObject]
-        positionals = list(arguments)
+        context = ExecutionContext(stack=[], positionals=list(arguments))
 
         for instruction in self.instructions:
-            instruction.execute(stack, positionals)
+            instruction.execute(context)
 
-        return stack[-1]
+        return context.stack[-1]
