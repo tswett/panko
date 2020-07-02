@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, List, Mapping, Sequence
+from typing import Callable, List, Mapping, Optional, Sequence
 
 from .objects import PankoObject
 
@@ -81,17 +81,14 @@ class SendMessageInstruction(PankoInstruction):
 class PankoFunction(PankoObject):
     def __init__(self, instructions: Sequence[PankoInstruction]):
         self.instructions = instructions
+        self.globals = None  # type: Optional[Mapping[bytes, PankoObject]]
 
     def __repr__(self):
         return repr(self.instructions)
 
-    def call(
-        self,
-        arguments: Sequence[PankoObject],
-        globals: Mapping[bytes, PankoObject] = None,
-    ) -> PankoObject:
+    def call(self, arguments: Sequence[PankoObject]) -> PankoObject:
         context = ExecutionContext(
-            stack=[], positionals=list(arguments), globals=globals
+            stack=[], positionals=list(arguments), globals=self.globals
         )
 
         for instruction in self.instructions:

@@ -19,7 +19,8 @@ def quick_test(
     globals: Mapping[bytes, PankoObject] = None,
 ):
     function = parser.parse_function_body(function_body)
-    result = function.call(arguments=[], globals=globals)
+    function.globals = globals
+    result = function.call(arguments=[])
     test_case.assertEqual(result, expected_result)
 
 
