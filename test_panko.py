@@ -2,6 +2,10 @@ import logging
 import sys
 import unittest
 
+from typeguard.importhook import install_import_hook
+
+install_import_hook("panko")
+
 from panko import parser
 from panko.functions import PankoFunction, PushPrimitiveInstruction
 from panko.objects import PankoFalse, PankoInteger, PankoObject, PankoTrue
