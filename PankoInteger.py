@@ -1,5 +1,6 @@
 from PankoObject import PankoObject
 
+
 class PankoInteger(PankoObject):
     def __init__(self, value: int):
         self.value = value

@@ -6,7 +6,11 @@ from lark.lexer import Token
 
 from PankoBool import PankoFalse, PankoTrue
 from PankoFunction import (
-    PankoFunction, PankoInstruction, PushPrimitiveInstruction, SendMessageInstruction)
+    PankoFunction,
+    PankoInstruction,
+    PushPrimitiveInstruction,
+    SendMessageInstruction,
+)
 from PankoInteger import PankoInteger
 from PankoObject import PankoObject
 
@@ -39,10 +43,11 @@ grammar = r"""
     %ignore WS_INLINE
 """
 
+
 @v_args(inline=True)
 class PankoTransformer(Transformer):
     def get_argument_list(self, *arguments):
-        logging.debug(f'flatten_argument_list: received {arguments}')
+        logging.debug(f"flatten_argument_list: received {arguments}")
         return arguments
 
     def false(self):
@@ -50,28 +55,35 @@ class PankoTransformer(Transformer):
 
     def true(self):
         return PankoTrue()
-    
+
     def integer(self, value_token: Token):
         return PankoInteger(int(value_token))
-    
+
     def instructions_to_function(self, instruction_list: Sequence[PankoInstruction]):
         return PankoFunction(instruction_list)
 
     def push_primitive(self, primitive: PankoObject):
         return [PushPrimitiveInstruction(primitive)]
 
-    def send_message(self,
-                     target: Sequence[PankoInstruction],
-                     message_name: str,
-                     argument_list: Sequence[Sequence[PankoInstruction]]):
-        logging.debug(f'send_message: argument_list is: {argument_list}')
-        setup_instructions = (
-            list(target) + [instruction for argument in argument_list for instruction in argument])
-        message_name_bytes = bytes(message_name, 'ascii')
-        send_message_instruction = SendMessageInstruction(message_name_bytes, len(argument_list))
+    def send_message(
+        self,
+        target: Sequence[PankoInstruction],
+        message_name: str,
+        argument_list: Sequence[Sequence[PankoInstruction]],
+    ):
+        logging.debug(f"send_message: argument_list is: {argument_list}")
+        setup_instructions = list(target) + [
+            instruction for argument in argument_list for instruction in argument
+        ]
+        message_name_bytes = bytes(message_name, "ascii")
+        send_message_instruction = SendMessageInstruction(
+            message_name_bytes, len(argument_list)
+        )
         return setup_instructions + [send_message_instruction]
 
-panko_parser = Lark(grammar, parser='lalr', transformer=PankoTransformer())
+
+panko_parser = Lark(grammar, parser="lalr", transformer=PankoTransformer())
+
 
 def parse_function_body(body: str) -> PankoFunction:
     return cast(PankoFunction, panko_parser.parse(body))
