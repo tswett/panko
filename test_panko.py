@@ -86,6 +86,23 @@ class BasicTests(unittest.TestCase):
         globals = {b"plus_one": plus_one}
         quick_test(self, "return plus_one(8);", PankoInteger(9), globals=globals)
 
+    def test_builtin_argument_order(self):
+        first = BuiltinFunction(lambda x, y: x)
+        second = BuiltinFunction(lambda x, y: y)
+        globals = {b"first": first, b"second": second}
+
+        def quicker_test(body, int):
+            quick_test(self, body, PankoInteger(int), globals=globals)
+
+        quicker_test("return first(1, first(2, 3));", 1)
+        quicker_test("return first(1, second(2, 3));", 1)
+        quicker_test("return second(1, first(2, 3));", 2)
+        quicker_test("return second(1, second(2, 3));", 3)
+        quicker_test("return first(first(1, 2), 3);", 1)
+        quicker_test("return first(second(1, 2), 3);", 2)
+        quicker_test("return second(first(1, 2), 3);", 3)
+        quicker_test("return second(second(1, 2), 3);", 3)
+
 
 if __name__ == "__main__":
     # logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
