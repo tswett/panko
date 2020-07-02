@@ -2,10 +2,12 @@ import logging
 from typing import Sequence
 
 from lark import Lark, Transformer, v_args
+from lark.lexer import Token
 
 from PankoBool import PankoFalse, PankoTrue
 from PankoFunction import (
     PankoFunction, PankoInstruction, PushPrimitiveInstruction, SendMessageInstruction)
+from PankoInteger import PankoInteger
 from PankoObject import PankoObject
 
 grammar = r"""
@@ -18,6 +20,7 @@ grammar = r"""
 
     atom: _FALSE -> false
         | _TRUE -> true
+        | INTEGER -> integer
 
     _COMMA.5: ","
     _DOT.5: "."
@@ -29,7 +32,8 @@ grammar = r"""
     _RETURN.7: /return(?!\w)/
     _TRUE.7: /true(?!\w)/
 
-    IDENTIFIER.5: /[A-Za-z0-9_]+(?!\w)/
+    IDENTIFIER.5: /[A-Za-z_][A-Za-z0-9_]*(?!\w)/
+    INTEGER.5: /[0-9]+(?!\w)/
 
     %import common.WS_INLINE
     %ignore WS_INLINE
@@ -46,6 +50,9 @@ class PankoTransformer(Transformer):
 
     def true(self):
         return PankoTrue()
+    
+    def integer(self, value_token: Token):
+        return PankoInteger(int(value_token))
     
     def instructions_to_function(self, instruction_list: Sequence[PankoInstruction]):
         return PankoFunction(instruction_list)

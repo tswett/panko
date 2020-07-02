@@ -4,6 +4,7 @@ import unittest
 
 from PankoBool import PankoFalse, PankoTrue
 from PankoFunction import PankoFunction, PushPrimitiveInstruction
+from PankoInteger import PankoInteger
 from PankoObject import PankoObject
 import Parser
 
@@ -35,6 +36,9 @@ class BasicTests(unittest.TestCase):
         quick_test(self, 'return true.if_else_v(false, true);', PankoFalse())
         quick_test(self, 'return true.if_else_v(true, false);', PankoTrue())
         quick_test(self, 'return true.if_else_v(true, true);', PankoTrue())
+    
+    def test_parse_integer(self):
+        quick_test(self, 'return 5;', PankoInteger(5))
 
 if __name__ == '__main__':
     # logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
