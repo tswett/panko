@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List, Sequence
 
-from PankoObject import PankoObject
+from .objects import PankoObject
 
 
 class PankoInstruction:

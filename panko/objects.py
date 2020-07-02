@@ -1,7 +1,24 @@
+from __future__ import annotations
+
 import logging
 from typing import Sequence
 
-from PankoObject import PankoObject
+
+class PankoObject:
+    def send_message_positional(
+        self, msg_name: bytes, arguments: Sequence[PankoObject]
+    ) -> PankoObject:
+
+        """Send the given named message to this object, passing the given list of arguments as
+        named parameters.
+        """
+
+        raise NotImplementedError
+
+    def call(self, arguments: Sequence[PankoObject]) -> PankoObject:
+        """Call this object, passing the given list of arguments as named parameters."""
+
+        raise NotImplementedError
 
 
 class PankoBool(PankoObject):
@@ -51,3 +68,14 @@ class PankoFalse(PankoBool):
 
 panko_true = PankoTrue()
 panko_false = PankoFalse()
+
+
+class PankoInteger(PankoObject):
+    def __init__(self, value: int):
+        self.value = value
+
+    def __eq__(self, other):
+        return isinstance(other, PankoInteger) and (self.value == other.value)
+
+    def __repr__(self):
+        return f"Panko integer {self.value}"

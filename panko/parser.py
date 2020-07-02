@@ -4,15 +4,13 @@ from typing import cast, Sequence
 from lark import Lark, Transformer, v_args
 from lark.lexer import Token
 
-from PankoBool import PankoFalse, PankoTrue
-from PankoFunction import (
+from .functions import (
     PankoFunction,
     PankoInstruction,
     PushPrimitiveInstruction,
     SendMessageInstruction,
 )
-from PankoInteger import PankoInteger
-from PankoObject import PankoObject
+from .objects import PankoFalse, PankoInteger, PankoObject, PankoTrue
 
 grammar = r"""
     start: _RETURN expression _SEMICOLON -> instructions_to_function

@@ -2,17 +2,15 @@ import logging
 import sys
 import unittest
 
-from PankoBool import PankoFalse, PankoTrue
-from PankoFunction import PankoFunction, PushPrimitiveInstruction
-from PankoInteger import PankoInteger
-from PankoObject import PankoObject
-import Parser
+from panko import parser
+from panko.functions import PankoFunction, PushPrimitiveInstruction
+from panko.objects import PankoFalse, PankoInteger, PankoObject, PankoTrue
 
 
 def quick_test(
     test_case: unittest.TestCase, function_body: str, expected_result: PankoObject
 ):
-    function = Parser.parse_function_body(function_body)
+    function = parser.parse_function_body(function_body)
     result = function.call(arguments=[])
     test_case.assertEqual(result, expected_result)
 
@@ -29,7 +27,7 @@ class BasicTests(unittest.TestCase):
 
     def test_need_space_after_keyword(self):
         with self.assertRaises(BaseException):
-            Parser.parse_function_body("returntrue;")
+            parser.parse_function_body("returntrue;")
 
     def test_send_message(self):
         quick_test(self, "return false.if_else_v(false, false);", PankoFalse())
