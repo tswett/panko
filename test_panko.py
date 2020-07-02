@@ -8,7 +8,7 @@ from typeguard.importhook import install_import_hook
 install_import_hook("panko")
 
 from panko import parser
-from panko.functions import PankoFunction, PushPrimitiveInstruction
+from panko.functions import BuiltinFunction, PankoFunction, PushPrimitiveInstruction
 from panko.objects import PankoFalse, PankoInteger, PankoObject, PankoTrue
 
 
@@ -79,6 +79,11 @@ class BasicTests(unittest.TestCase):
     def test_globals(self):
         globals = {b"three": PankoInteger(3)}
         quick_test(self, "return three;", PankoInteger(3), globals=globals)
+
+    def test_builtin_function(self):
+        plus_one = BuiltinFunction(lambda x: PankoInteger(x.value + 1))
+        globals = {b"plus_one": plus_one}
+        quick_test(self, "return plus_one(8);", PankoInteger(9), globals=globals)
 
 
 if __name__ == "__main__":

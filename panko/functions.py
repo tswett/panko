@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Mapping, Sequence
+from typing import Callable, List, Mapping, Sequence
 
 from .objects import PankoObject
 
@@ -45,6 +45,22 @@ class PushPrimitiveInstruction(PankoInstruction):
         context.stack.append(self.value)
 
 
+class CallInstruction(PankoInstruction):
+    def __init__(self, num_arguments: int):
+        self.num_arguments = num_arguments
+
+    def __repr__(self):
+        return f"call({self.num_arguments})"
+
+    def execute(self, context: ExecutionContext):
+        arguments = context.stack[-self.num_arguments :]
+        for _ in range(self.num_arguments):
+            context.stack.pop()
+        target = context.stack.pop()
+        result = target.call(arguments)
+        context.stack.append(result)
+
+
 class SendMessageInstruction(PankoInstruction):
     def __init__(self, message_name: bytes, num_arguments: int):
         self.message_name = message_name
@@ -82,3 +98,11 @@ class PankoFunction(PankoObject):
             instruction.execute(context)
 
         return context.stack[-1]
+
+
+class BuiltinFunction(PankoObject):
+    def __init__(self, implementation: Callable[..., PankoObject]):
+        self.implementation = implementation
+
+    def call(self, arguments: Sequence[PankoObject]):
+        return self.implementation(*arguments)

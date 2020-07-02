@@ -5,6 +5,7 @@ from lark import Lark, Transformer, v_args
 from lark.lexer import Token
 
 from .functions import (
+    CallInstruction,
     PankoFunction,
     PankoInstruction,
     PushGlobalInstruction,
@@ -19,6 +20,7 @@ grammar = r"""
     ?expression: primitive_atom -> push_primitive
                | IDENTIFIER -> push_global
                | expression _DOT IDENTIFIER _LEFTPAREN argument_list _RIGHTPAREN -> send_message
+               | expression _LEFTPAREN argument_list _RIGHTPAREN -> call
 
     argument_list: (expression (_COMMA expression)*)? -> get_argument_list
 
@@ -84,6 +86,17 @@ class PankoTransformer(Transformer):
             message_name_bytes, len(argument_list)
         )
         return setup_instructions + [send_message_instruction]
+
+    def call(
+        self,
+        target: Sequence[PankoInstruction],
+        argument_list: Sequence[Sequence[PankoInstruction]],
+    ):
+        setup_instructions = list(target) + [
+            instruction for argument in argument_list for instruction in argument
+        ]
+        call_instruction = CallInstruction(len(argument_list))
+        return setup_instructions + [call_instruction]
 
 
 panko_parser = Lark(grammar, parser="lalr", transformer=PankoTransformer())
