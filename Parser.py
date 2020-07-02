@@ -1,5 +1,5 @@
 import logging
-from typing import Sequence
+from typing import cast, Sequence
 
 from lark import Lark, Transformer, v_args
 from lark.lexer import Token
@@ -72,4 +72,6 @@ class PankoTransformer(Transformer):
         return setup_instructions + [send_message_instruction]
 
 panko_parser = Lark(grammar, parser='lalr', transformer=PankoTransformer())
-parse_function_body = panko_parser.parse
+
+def parse_function_body(body: str) -> PankoFunction:
+    return cast(PankoFunction, panko_parser.parse(body))

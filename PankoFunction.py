@@ -5,7 +5,7 @@ from typing import List, Sequence
 from PankoObject import PankoObject
 
 class PankoInstruction:
-    def execute(self, stack: List[PankoObject], positionals: Sequence[PankoInstruction]):
+    def execute(self, stack: List[PankoObject], positionals: Sequence[PankoObject]):
         raise NotImplementedError
 
 class PushPrimitiveInstruction(PankoInstruction):
@@ -42,7 +42,7 @@ class PankoFunction(PankoObject):
         return repr(self.instructions)
     
     def call(self, arguments: Sequence[PankoObject]) -> PankoObject:
-        stack = []
+        stack = [] # type: List[PankoObject]
         positionals = list(arguments)
 
         for instruction in self.instructions:
