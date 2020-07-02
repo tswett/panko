@@ -26,7 +26,7 @@ class PankoBool(PankoObject):
         self, msg_name: bytes, arguments: Sequence[PankoObject]
     ) -> PankoObject:
 
-        logging.debug(f"PankoBool received message: {msg_name!a}")
+        logging.debug(f"PankoBool received message: {msg_name!s}")
         logging.debug(f"PankoBool self is: {self}")
         logging.debug(f"PankoBool message arguments: {arguments}")
 

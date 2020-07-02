@@ -1,5 +1,6 @@
 import logging
 import sys
+from typing import Mapping
 import unittest
 
 from typeguard.importhook import install_import_hook
@@ -12,10 +13,13 @@ from panko.objects import PankoFalse, PankoInteger, PankoObject, PankoTrue
 
 
 def quick_test(
-    test_case: unittest.TestCase, function_body: str, expected_result: PankoObject
+    test_case: unittest.TestCase,
+    function_body: str,
+    expected_result: PankoObject,
+    globals: Mapping[bytes, PankoObject] = None,
 ):
     function = parser.parse_function_body(function_body)
-    result = function.call(arguments=[])
+    result = function.call(arguments=[], globals=globals)
     test_case.assertEqual(result, expected_result)
 
 
@@ -71,6 +75,10 @@ class BasicTests(unittest.TestCase):
         quick_test(
             self, "return false.if_else_v(false.if_else_v(1, 2), 3);", PankoInteger(3)
         )
+
+    def test_globals(self):
+        globals = {b"three": PankoInteger(3)}
+        quick_test(self, "return three;", PankoInteger(3), globals=globals)
 
 
 if __name__ == "__main__":

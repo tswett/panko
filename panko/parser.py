@@ -7,6 +7,7 @@ from lark.lexer import Token
 from .functions import (
     PankoFunction,
     PankoInstruction,
+    PushGlobalInstruction,
     PushPrimitiveInstruction,
     SendMessageInstruction,
 )
@@ -15,12 +16,13 @@ from .objects import PankoFalse, PankoInteger, PankoObject, PankoTrue
 grammar = r"""
     start: _RETURN expression _SEMICOLON -> instructions_to_function
 
-    ?expression: atom -> push_primitive
+    ?expression: primitive_atom -> push_primitive
+               | IDENTIFIER -> push_global
                | expression _DOT IDENTIFIER _LEFTPAREN argument_list _RIGHTPAREN -> send_message
 
     argument_list: (expression (_COMMA expression)*)? -> get_argument_list
 
-    atom: _FALSE -> false
+    primitive_atom: _FALSE -> false
         | _TRUE -> true
         | INTEGER -> integer
 
@@ -59,6 +61,10 @@ class PankoTransformer(Transformer):
 
     def instructions_to_function(self, instruction_list: Sequence[PankoInstruction]):
         return PankoFunction(instruction_list)
+
+    def push_global(self, global_name: Token):
+        global_name_bytes = bytes(str(global_name), "utf8")
+        return [PushGlobalInstruction(global_name_bytes)]
 
     def push_primitive(self, primitive: PankoObject):
         return [PushPrimitiveInstruction(primitive)]
