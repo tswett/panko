@@ -39,6 +39,16 @@ class BasicTests(unittest.TestCase):
     
     def test_parse_integer(self):
         quick_test(self, 'return 5;', PankoInteger(5))
+    
+    def test_argument_order(self):
+        quick_test(self, 'return true.if_else_v(1, true.if_else_v(2, 3));', PankoInteger(1))
+        quick_test(self, 'return true.if_else_v(1, false.if_else_v(2, 3));', PankoInteger(1))
+        quick_test(self, 'return false.if_else_v(1, true.if_else_v(2, 3));', PankoInteger(2))
+        quick_test(self, 'return false.if_else_v(1, false.if_else_v(2, 3));', PankoInteger(3))
+        quick_test(self, 'return true.if_else_v(true.if_else_v(1, 2), 3);', PankoInteger(1))
+        quick_test(self, 'return true.if_else_v(false.if_else_v(1, 2), 3);', PankoInteger(2))
+        quick_test(self, 'return false.if_else_v(true.if_else_v(1, 2), 3);', PankoInteger(3))
+        quick_test(self, 'return false.if_else_v(false.if_else_v(1, 2), 3);', PankoInteger(3))
 
 if __name__ == '__main__':
     # logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
