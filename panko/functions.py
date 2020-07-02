@@ -84,7 +84,8 @@ class PankoFunction(PankoObject):
         self.globals = None  # type: Optional[Mapping[bytes, PankoObject]]
 
     def __repr__(self):
-        return repr(self.instructions)
+        instruction_strings = [repr(instruction) for instruction in self.instructions]
+        return "PankoFunction:\n" + "\n".join(instruction_strings)
 
     def call(self, arguments: Sequence[PankoObject]) -> PankoObject:
         context = ExecutionContext(
